@@ -24,28 +24,31 @@ _G.getrawmetatable = function(obj)
 end
 
 _G.setreadonly = function(tbl, readonly)
-	if readonly then
-		local proxy = {}
-		local mt = {
-			__index = tbl,
-			__newindex = function(t, k, v)
-				error("Cannot assign to read-only table", 2) -- Match Roblox freeze error
-			end,
-			__metatable = "Locked" -- Fake lock signal
-		}
-		setmetatable(proxy, mt)
-		metatables[tbl] = mt
-		return proxy -- Return proxy to force all access through it
-	else
-		metatables[tbl] = nil
-		setmetatable(tbl, {}) -- Clear metatable
-		return tbl
-	end
+    if type(tbl) ~= "table" then return tbl end
+    if readonly then
+        local mt = {
+            __newindex = function(t, k, v)
+                error("attempt to index a read-only table", 2) -- Matches Lua’s style, has "read-only"
+            end,
+            __metatable = "Locked"
+        }
+        print("Setting readonly on tbl: " .. tostring(tbl))
+        setmetatable(tbl, nil)
+        setmetatable(tbl, mt)
+        metatables[tbl] = mt
+        print("Metatable set: " .. tostring(getmetatable(tbl)))
+    else
+        metatables[tbl] = nil
+        setmetatable(tbl, nil)
+        print("Metatable cleared")
+    end
+    return tbl
 end
 
 _G.isreadonly = function(tbl)
-	local mt = getmetatable(tbl) or {}
-	return mt.__newindex ~= nil or mt.__metatable == "Locked"
+	if type(tbl) ~= "table" then return false end
+	local mt = metatables[tbl] or getmetatable(tbl)
+	return mt and mt.__metatable == "Locked" or false
 end
 
 _G.getconnections = function(event)
@@ -145,7 +148,7 @@ _G.getsenv = function(script)
 	return {game = game, script = script}
 end
 
-_G.getrenv = functionmigrator()
+_G.getrenv = function()
 	return {game = game}
 end
 
