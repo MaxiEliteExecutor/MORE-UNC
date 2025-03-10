@@ -48,11 +48,6 @@ _G.isreadonly = function(tbl)
 	return mt.__newindex ~= nil or mt.__metatable == "Locked"
 end
 
-_G.loadstring = function(src)
-	if src == "return ... + 1" then return function(...) return ... + 1 end, "" end
-	return nil, "loadstring unavailable"
-end
-
 _G.getconnections = function(event)
 	return {{Enabled = true, Function = function() end, Disconnect = function(self) self.Enabled = false end}}
 end
@@ -150,7 +145,7 @@ _G.getsenv = function(script)
 	return {game = game, script = script}
 end
 
-_G.getrenv = function()
+_G.getrenv = functionmigrator()
 	return {game = game}
 end
 
