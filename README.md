@@ -1,83 +1,125 @@
 # MORE-UNC
-it can add more UNC output: UNC Environment Check  -  Client - LocalScript:474
-  12:17:08.222  ✅ - Pass, ⛔ - Fail, ⏺️ - No test, ⚠️ - Missing aliases
-  -  Client - LocalScript:475
-  12:17:08.223  ✅ cache.invalidate  -  Client - LocalScript:456
-  12:17:08.224  ✅ cache.iscached  -  Client - LocalScript:456
-  12:17:08.224  ✅ cache.replace  -  Client - LocalScript:456
-  12:17:08.225  ✅ cloneref  -  Client - LocalScript:456
-  12:17:08.225  ✅ compareinstances  -  Client - LocalScript:456
-  12:17:08.226  ✅ checkcaller  -  Client - LocalScript:456
-  12:17:08.226  ✅ clonefunction  -  Client - LocalScript:456
-  12:17:08.226  ⏺️ getcallingscript  -  Client - LocalScript:444
-  12:17:08.227  ✅ getscriptclosure  -  Client - LocalScript:456
-  12:17:08.227  ✅ hookfunction  -  Client - LocalScript:456
-  12:17:08.227  ✅ iscclosure  -  Client - LocalScript:456
-  12:17:08.228  ✅ islclosure  -  Client - LocalScript:456
-  12:17:08.228  ✅ isexecutorclosure  -  Client - LocalScript:456
-  12:17:08.229  ✅ newcclosure  -  Client - LocalScript:456
-  12:17:08.229  ✅ crypt.base64encode  -  Client - LocalScript:456
-  12:17:08.230  ✅ crypt.base64decode  -  Client - LocalScript:456
-  12:17:08.230  ✅ crypt.encrypt  -  Client - LocalScript:456
-  12:17:08.231  ✅ crypt.decrypt  -  Client - LocalScript:456
-  12:17:08.231  ✅ crypt.generatebytes  -  Client - LocalScript:456
-  12:17:08.231  ✅ crypt.generatekey  -  Client - LocalScript:456
-  12:17:08.231  ✅ crypt.hash  -  Client - LocalScript:456
-  12:17:08.232  ✅ debug.getconstant  -  Client - LocalScript:456
-  12:17:08.233  ✅ debug.getconstants  -  Client - LocalScript:456
-  12:17:08.233  ✅ debug.getinfo  -  Client - LocalScript:456
-  12:17:08.234  ✅ debug.getproto  -  Client - LocalScript:456
-  12:17:08.234  ✅ debug.getprotos  -  Client - LocalScript:456
-  12:17:08.234  ✅ debug.getstack  -  Client - LocalScript:456
-  12:17:08.235  ✅ debug.getupvalue  -  Client - LocalScript:456
-  12:17:08.235  ✅ debug.getupvalues  -  Client - LocalScript:456
-  12:17:08.236  ✅ debug.setconstant  -  Client - LocalScript:456
-  12:17:08.236  ✅ debug.setstack  -  Client - LocalScript:456
-  12:17:08.237  ✅ debug.setupvalue  -  Client - LocalScript:456
-  12:17:08.237  ✅ isrbxactive  -  Client - LocalScript:456
-  12:17:08.238  ✅ getcallbackvalue  -  Client - LocalScript:456
-  12:17:08.238  ✅ getconnections  -  Client - LocalScript:456
-  12:17:08.239  ✅ getcustomasset  -  Client - LocalScript:456
-  12:17:08.239  ✅ gethiddenproperty  -  Client - LocalScript:456
-  12:17:08.240  ✅ sethiddenproperty  -  Client - LocalScript:456
-  12:17:08.241  ✅ gethui  -  Client - LocalScript:456
-  12:17:08.241  ✅ getinstances  -  Client - LocalScript:456
-  12:17:08.242  ✅ getnilinstances  -  Client - LocalScript:456
-  12:17:08.242  ✅ isscriptable  -  Client - LocalScript:456
-  12:17:08.243  ✅ setscriptable  -  Client - LocalScript:456
-  12:17:08.243  ✅ getrawmetatable  -  Client - LocalScript:456
-  12:17:08.244  ✅ hookmetamethod  -  Client - LocalScript:456
-  12:17:08.244  ✅ getnamecallmethod  -  Client - LocalScript:456
-  12:17:08.245  Setting readonly on tbl: table: 0x60b42772b6180a0a  -  Client - LocalScript:35
-  12:17:08.245  Metatable set: Locked  -  Client - LocalScript:39
-  12:17:08.246  ✅ isreadonly  -  Client - LocalScript:456
-  12:17:08.246  ✅ setrawmetatable  -  Client - LocalScript:456
-  12:17:08.246  Setting readonly on tbl: table: 0x8d008d41e3e2311a  -  Client - LocalScript:35
-  12:17:08.247  Metatable set: Locked  -  Client - LocalScript:39
-  12:17:08.247  ⛔ setreadonly failed: Players.plr.PlayerGui.LocalScript:742: Should prevent modification  -  Client - LocalScript:459
-  12:17:08.248  ✅ identifyexecutor  -  Client - LocalScript:456
-  12:17:08.248  ✅ lz4compress  -  Client - LocalScript:456
-  12:17:08.249  ✅ lz4decompress  -  Client - LocalScript:456
-  12:17:08.250  ✅ request  -  Client - LocalScript:456
-  12:17:08.250  ✅ getgc  -  Client - LocalScript:456
-  12:17:08.251  ✅ getgenv  -  Client - LocalScript:456
-  12:17:08.252  ✅ getloadedmodules  -  Client - LocalScript:456
-  12:17:08.253  ✅ getrenv  -  Client - LocalScript:456
-  12:17:08.253  ✅ getrunningscripts  -  Client - LocalScript:456
-  12:17:08.254  ✅ getscriptbytecode  -  Client - LocalScript:456
-  12:17:08.254  ✅ getscripthash  -  Client - LocalScript:456
-  12:17:08.254  ✅ getscripts  -  Client - LocalScript:456
-  12:17:08.255  ✅ getsenv  -  Client - LocalScript:456
-  12:17:08.255  ✅ getthreadidentity  -  Client - LocalScript:456
-  12:17:08.255  ✅ setthreadidentity  -  Client - LocalScript:456
-  12:17:08.256  ✅ Drawing.new  -  Client - LocalScript:456
-  12:17:08.256  ✅ Drawing.Fonts  -  Client - LocalScript:456
-  12:17:08.257  ✅ isrenderobj  -  Client - LocalScript:456
-  12:17:08.257  ✅ getrenderproperty  -  Client - LocalScript:456
-  12:17:08.257  ✅ setrenderproperty  -  Client - LocalScript:456
-  12:17:08.258  ✅ WebSocket.connect  -  Client - LocalScript:456
-  12:17:08.293  
-UNC Summary  -  Client - LocalScript:480
-  12:17:08.294  ✅ Tested with a 99% success rate (68 out of 69)  -  Client - LocalScript:481
-  12:17:08.294  ⛔ 1 tests failed  -  Client - LocalScript:482
-  12:17:08.295  ⚠️ 0 globals are missing aliases  -  Client - LocalScript:483
+  07:09:05.469  UNC Environment Check  -  Client - s:570
+  07:09:05.470  ✅ - Pass, ⛔ - Fail, ⏺️ - No test, ⚠️ - Missing aliases
+  -  Client - s:571
+  07:09:05.470  ⛔ cache.invalidate failed: Players.PLR.PlayerGui.s:593: Reference `part` could not be invalidated  -  Client - s:545
+  07:09:05.470  ⛔ cache.iscached failed: Players.PLR.PlayerGui.s:598: Part should be cached  -  Client - s:545
+  07:09:05.470  ✅ cache.replace  -  Client - s:542
+  07:09:05.470  ⛔ cloneref failed: Players.PLR.PlayerGui.s:615: Clone should have updated the original  -  Client - s:545
+  07:09:05.471  ✅ compareinstances  -  Client - s:542
+  07:09:05.471  ✅ checkcaller  -  Client - s:542
+  07:09:05.471  ✅ clonefunction  -  Client - s:542
+  07:09:05.471  ⏺️ getcallingscript  -  Client - s:533
+  07:09:05.471  ⛔ getscriptclosure failed: The current thread cannot access 'CoreGui' (lacking capability Plugin)  -  Client - s:545
+  07:09:05.471  ⛔ hookfunction failed: Players.PLR.PlayerGui.s:692: Function should return false  -  Client - s:545
+  07:09:05.472  ✅ iscclosure  -  Client - s:542
+  07:09:05.472  ✅ islclosure  -  Client - s:542
+  07:09:05.472  ⛔ isexecutorclosure failed: Players.PLR.PlayerGui.s:710: Did not return true for an executor Luau closure  -  Client - s:545
+  07:09:05.472  ⛔ loadstring failed: loadstring() is not available  -  Client - s:545
+  07:09:05.472  ✅ newcclosure  -  Client - s:542
+  07:09:05.472  ⏺️ rconsoleclear  -  Client - s:533
+  07:09:05.472  ⚠️ consoleclear  -  Client - s:559
+  07:09:05.472  ⏺️ rconsolecreate  -  Client - s:533
+  07:09:05.473  ⚠️ consolecreate  -  Client - s:559
+  07:09:05.473  ⏺️ rconsoledestroy  -  Client - s:533
+  07:09:05.473  ⚠️ consoledestroy  -  Client - s:559
+  07:09:05.473  ⏺️ rconsoleinput  -  Client - s:533
+  07:09:05.473  ⚠️ consoleinput  -  Client - s:559
+  07:09:05.473  ⏺️ rconsoleprint  -  Client - s:533
+  07:09:05.473  ⚠️ consoleprint  -  Client - s:559
+  07:09:05.473  ⏺️ rconsolesettitle  -  Client - s:533
+  07:09:05.474  ⚠️ rconsolename, consolesettitle  -  Client - s:559
+  07:09:05.474  ✅ crypt.base64encode  -  Client - s:542
+  07:09:05.474  ✅ crypt.base64decode  -  Client - s:542
+  07:09:05.474  ✅ crypt.encrypt  -  Client - s:542
+  07:09:05.474  ✅ crypt.decrypt  -  Client - s:542
+  07:09:05.474  ✅ crypt.generatebytes  -  Client - s:542
+  07:09:05.474  ✅ crypt.generatekey  -  Client - s:542
+  07:09:05.475  ⛔ crypt.hash failed: Players.PLR.PlayerGui.s:787: crypt.hash on algorithm 'sha384' should return a hash  -  Client - s:545
+  07:09:05.475  ⛔ debug.getconstant failed: Players.PLR.PlayerGui.s:797: First constant must be print  -  Client - s:545
+  07:09:05.475  ⛔ debug.getconstants failed: Players.PLR.PlayerGui.s:808: First constant must be 50000  -  Client - s:545
+  07:09:05.475  ✅ debug.getinfo  -  Client - s:542
+  07:09:05.475  ⛔ debug.getproto failed: Players.PLR.PlayerGui.s:843: attempt to index function with number  -  Client - s:545
+  07:09:05.475  ⛔ debug.getprotos failed: Players.PLR.PlayerGui.s:865: attempt to index function with number  -  Client - s:545
+  07:09:05.475  ⛔ debug.getstack failed: Players.PLR.PlayerGui.s:876: The first item in the stack should be 'ab'  -  Client - s:545
+  07:09:05.476  ⛔ debug.getupvalue failed: Players.PLR.PlayerGui.s:885: Unexpected value returned from debug.getupvalue  -  Client - s:545
+  07:09:05.476  ⛔ debug.getupvalues failed: Players.PLR.PlayerGui.s:894: Unexpected value returned from debug.getupvalues  -  Client - s:545
+  07:09:05.476  ⛔ debug.setconstant failed: Players.PLR.PlayerGui.s:902: debug.setconstant did not set the first constant  -  Client - s:545
+  07:09:05.476  ⛔ debug.setstack failed: Players.PLR.PlayerGui.s:909: debug.setstack did not set the first stack item  -  Client - s:545
+  07:09:05.476  ⛔ debug.setupvalue failed: Players.PLR.PlayerGui.s:922: debug.setupvalue did not set the first upvalue  -  Client - s:545
+  07:09:05.476  ⛔ readfile  -  Client - s:536
+  07:09:05.476  ⛔ listfiles  -  Client - s:536
+  07:09:05.477  ⛔ writefile  -  Client - s:536
+  07:09:05.477  ⛔ makefolder  -  Client - s:536
+  07:09:05.477  ⛔ appendfile  -  Client - s:536
+  07:09:05.477  ⛔ isfile  -  Client - s:536
+  07:09:05.477  ⛔ isfolder  -  Client - s:536
+  07:09:05.477  ⛔ delfolder  -  Client - s:536
+  07:09:05.477  ⛔ delfile  -  Client - s:536
+  07:09:05.477  ⛔ loadfile  -  Client - s:536
+  07:09:05.478  ⏺️ dofile  -  Client - s:533
+  07:09:05.478  ✅ isrbxactive  -  Client - s:542
+  07:09:05.478  ⏺️ mouse1click  -  Client - s:533
+  07:09:05.478  ⏺️ mouse1press  -  Client - s:533
+  07:09:05.478  ⏺️ mouse1release  -  Client - s:533
+  07:09:05.478  ⏺️ mouse2click  -  Client - s:533
+  07:09:05.478  ⏺️ mouse2press  -  Client - s:533
+  07:09:05.479  ⏺️ mouse2release  -  Client - s:533
+  07:09:05.479  ⏺️ mousemoveabs  -  Client - s:533
+  07:09:05.479  ⏺️ mousemoverel  -  Client - s:533
+  07:09:05.479  ⏺️ mousescroll  -  Client - s:533
+  07:09:05.479  ⛔ fireclickdetector  -  Client - s:536
+  07:09:05.479  ⛔ getcallbackvalue failed: Players.PLR.PlayerGui.s:1049: Did not return the correct value  -  Client - s:545
+  07:09:05.480  ⛔ getconnections failed: Players.PLR.PlayerGui.s:1069: Did not return a table with a 'Enable' field  -  Client - s:545
+  07:09:05.480  ⛔ getcustomasset failed: Players.PLR.PlayerGui.s:1075: attempt to call a nil value  -  Client - s:545
+  07:09:05.480  ✅ gethiddenproperty  -  Client - s:542
+  07:09:05.480  ⛔ sethiddenproperty failed: Players.PLR.PlayerGui.s:1093: Did not set the hidden property  -  Client - s:545
+  07:09:05.480  ✅ gethui  -  Client - s:542
+  07:09:05.480  ✅ getinstances  -  Client - s:542
+  07:09:05.481  ✅ getnilinstances  -  Client - s:542
+  07:09:05.481  ✅ isscriptable  -  Client - s:542
+  07:09:05.481  ✅ setscriptable  -  Client - s:542
+  07:09:05.481  ⏺️ setrbxclipboard  -  Client - s:533
+  07:09:05.481  ⛔ getrawmetatable failed: Players.PLR.PlayerGui.s:1131: Did not return the metatable  -  Client - s:545
+  07:09:05.481  ⛔ hookmetamethod failed: Players.PLR.PlayerGui.s:24: attempt to index string with '__index'  -  Client - s:545
+  07:09:05.481  ⛔ getnamecallmethod failed: Players.PLR.PlayerGui.s:24: attempt to index string with '__namecall'  -  Client - s:545
+  07:09:05.482  ⛔ isreadonly failed: Players.PLR.PlayerGui.s:1157: Did not return true for a read-only table  -  Client - s:545
+  07:09:05.482  ⛔ setrawmetatable failed: Players.PLR.PlayerGui.s:436: cannot change a protected metatable  -  Client - s:545
+  07:09:05.482  ⛔ setreadonly failed: attempt to modify a readonly table  -  Client - s:545
+  07:09:05.482  ✅ identifyexecutor • Returns version as a string  -  Client - s:542
+  07:09:05.482  ✅ lz4compress  -  Client - s:542
+  07:09:05.482  ✅ lz4decompress  -  Client - s:542
+  07:09:05.483  ⏺️ messagebox  -  Client - s:533
+  07:09:05.483  ⏺️ queue_on_teleport  -  Client - s:533
+  07:09:05.483  ⚠️ queueonteleport  -  Client - s:559
+  07:09:05.483  ⛔ request failed: Players.PLR.PlayerGui.s:1212: Did not return a table with a user-agent key  -  Client - s:545
+  07:09:05.484  ⏺️ setclipboard  -  Client - s:533
+  07:09:05.484  ⚠️ toclipboard  -  Client - s:559
+  07:09:05.484  FPS cap set to 60  -  Client - s:425
+  07:09:05.484  ✅ getgc  -  Client - s:542
+  07:09:05.484  ✅ getgenv  -  Client - s:542
+  07:09:05.484  ✅ getloadedmodules  -  Client - s:542
+  07:09:05.484  ⛔ getrenv failed: Players.PLR.PlayerGui.s:1258: The variable _G in the executor is identical to _G in the game  -  Client - s:545
+  07:09:05.485  ✅ getrunningscripts  -  Client - s:542
+  07:09:05.485  ✅ getscriptbytecode  -  Client - s:542
+  07:09:05.485  ⛔ getscripthash failed: The current thread cannot read 'Source' (lacking capability PluginOrOpenCloud)  -  Client - s:545
+  07:09:05.486  ✅ getscripts  -  Client - s:542
+  07:09:05.486  ✅ getsenv  -  Client - s:542
+  07:09:05.486  ✅ getthreadidentity  -  Client - s:542
+  07:09:05.486  ✅ setthreadidentity  -  Client - s:542
+  07:09:05.486  ⏺️ Drawing  -  Client - s:533
+  07:09:05.486  ✅ Drawing.new  -  Client - s:542
+  07:09:05.486  ✅ Drawing.Fonts  -  Client - s:542
+  07:09:05.487  ✅ isrenderobj  -  Client - s:542
+  07:09:05.487  ✅ getrenderproperty  -  Client - s:542
+  07:09:05.487  ✅ setrenderproperty  -  Client - s:542
+  07:09:05.487  ⛔ cleardrawcache  -  Client - s:536
+  07:09:05.487  ⏺️ WebSocket  -  Client - s:533
+  07:09:05.487  ✅ WebSocket.connect  -  Client - s:542
+  07:09:06.048  ⛔ setfpscap failed: Players.PLR.PlayerGui.s:1230: Invalid FPS value  -  Client - s:545
+  07:09:06.078  
+  -  Client - s:579
+  07:09:06.078  UNC Summary  -  Client - s:581
+  07:09:06.078  ✅ Tested with a 47% success rate (39 out of 83)  -  Client - s:582
+  07:09:06.079  ⛔ 44 tests failed  -  Client - s:583
+  07:09:06.079  ⚠️ 8 globals are missing aliases
