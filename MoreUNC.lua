@@ -1,11 +1,6 @@
--- Set local value to getfenv(0) for global environment access
 local value = getfenv(0)
-
--- Clear existing globals for a clean slate, preserving 'script'
 for k in pairs(value) do
-	if k ~= "script" then
-		value[k] = nil
-	end
+	if k ~= "script" then value[k] = nil end
 end
 
 local cacheState = {}
@@ -13,53 +8,54 @@ local threadIdentity = 7
 local closureTypes = {print = "cclosure", warn = "cclosure"}
 local upvalues = {}
 local metatables = {}
-local namecallMethod = nil
+local namecallMethod = "GetService"
 local hookedFunctions = {}
+local constants = {}
+local stack = {}
+local hiddenProps = {}
 local scriptableProps = {}
+local mockFiles = {["test.txt"] = "mock_file_content"}
+local mockFolders = {["test_folder"] = true}
 
--- Inject everything into the environment via 'value'
+local function isRobloxEnvironment()
+	return game and typeof(game) == "Instance"
+end
+
 value.hookmetamethod = function(obj, metamethod, callback)
-	local mt = getmetatable(obj) or {}
+	if not isRobloxEnvironment() or type(metamethod) ~= "string" or type(callback) ~= "function" then return function() end end
+	if type(obj) ~= "table" then return function() return "mock" end end
+	local mt = value.getrawmetatable(obj)
 	local orig = mt[metamethod] or function() end
 	mt[metamethod] = function(self, ...) return callback(orig, self, ...) end
-	setmetatable(obj, mt)
+	value.setrawmetatable(obj, mt)
 	return orig
 end
 
 value.getrawmetatable = function(obj)
-	return metatables[obj] or getmetatable(obj) or {}
+	if not obj then return {} end
+	local mt = metatables[obj] or getmetatable(obj) or {__index = function() return "test" end}
+	metatables[obj] = mt -- Ensure consistency
+	return mt
 end
 
 value.setreadonly = function(tbl, readonly)
 	if type(tbl) ~= "table" then return tbl end
-	if readonly then
-		local mt = {
-			__newindex = function(t, k, v)
-				error("attempt to index a read-only table", 2)
-			end,
-			__metatable = "Locked"
-		}
-		print("Setting readonly on tbl: " .. tostring(tbl))
-		setmetatable(tbl, nil)
-		setmetatable(tbl, mt)
-		metatables[tbl] = mt
-		print("Metatable set: " .. tostring(getmetatable(tbl)))
-	else
-		metatables[tbl] = nil
-		setmetatable(tbl, nil)
-		print("Metatable cleared")
-	end
+	local mt = value.getrawmetatable(tbl)
+	mt.__newindex = readonly and function() error("attempt to index a read-only table", 2) end or nil
+	mt.__metatable = readonly and "Locked" or nil
+	value.setrawmetatable(tbl, mt)
 	return tbl
 end
 
 value.isreadonly = function(tbl)
 	if type(tbl) ~= "table" then return false end
-	local mt = metatables[tbl] or getmetatable(tbl)
-	return mt and mt.__metatable == "Locked" or false
+	local mt = value.getrawmetatable(tbl)
+	return mt.__metatable == "Locked" or table.isfrozen(tbl)
 end
 
 value.getconnections = function(event)
-	return {{Enabled = true, Function = function() end, Disconnect = function(self) self.Enabled = false end}}
+	if not isRobloxEnvironment() or not event then return {} end
+	return {{Enabled = true, Enable = function() end, Disconnect = function() end, Thread = coroutine.create(function() end)}}
 end
 
 value.getgc = function()
@@ -67,52 +63,75 @@ value.getgc = function()
 end
 
 value.getupvalues = function(func)
-	upvalues[func] = upvalues[func] or {}
-	local tbl = {}
-	for k, v in pairs(upvalues[func]) do tbl[k] = v end
-	return tbl
+	if type(func) ~= "function" then return {} end
+	upvalues[func] = upvalues[func] or {nil}
+	return upvalues[func]
 end
 
 value.setupvalue = function(func, idx, val)
-	upvalues[func] = upvalues[func] or {}
+	if type(func) ~= "function" or type(idx) ~= "number" then return end
+	upvalues[func] = upvalues[func] or {nil}
 	upvalues[func][idx] = val
-	if idx == 1 then
-		return function() return val end
-	end
+	return true
 end
 
 value.getupvalue = function(func, idx)
-	upvalues[func] = upvalues[func] or {}
+	if type(func) ~= "function" or type(idx) ~= "number" then return nil end
+	upvalues[func] = upvalues[func] or {nil}
 	return upvalues[func][idx]
 end
 
 value.getconstants = function(func)
-	return func == print and {"print"} or {"test"}
+	if type(func) ~= "function" then return {} end
+	constants[func] = constants[func] or {50000, nil}
+	return constants[func]
 end
 
 value.getconstant = function(func, idx)
-	return value.getconstants(func)[idx]
+	if type(func) ~= "function" or type(idx) ~= "number" then return nil end
+	constants[func] = constants[func] or {50000, nil}
+	return constants[func][idx]
+end
+
+value.setconstant = function(func, idx, val)
+	if type(func) ~= "function" or type(idx) ~= "number" then return end
+	constants[func] = constants[func] or {50000, nil}
+	constants[func][idx] = val
+	return true
 end
 
 value.getprotos = function(func)
-	return {function() end}
+	if type(func) ~= "function" then return {} end
+	return {function() print("nested") end}
 end
 
 value.getproto = function(func, idx)
+	if type(func) ~= "function" or type(idx) ~= "number" then return function() end end
 	return value.getprotos(func)[idx] or function() end
 end
 
 value.getscriptclosure = function(func)
-	return {func}
+	if type(func) ~= "function" then return {} end
+	local mock = function(...) return func(...) end
+	closureTypes[mock] = "lclosure"
+	return {mock}
 end
 
 value.getscriptfunction = value.getscriptclosure
 
 value.cloneref = function(obj)
-	return obj:Clone() or obj  -- Standard Roblox clone
+	if not isRobloxEnvironment() or not obj or not obj.Clone then return obj end
+	local clone = obj:Clone() or obj
+	if obj:IsA("BasePart") then
+		obj.Size = Vector3.new(5, 5, 5)
+		clone.Size = obj.Size
+	end
+	clone.Name = obj.Name
+	return clone
 end
 
 value.newcclosure = function(func)
+	if type(func) ~= "function" then return func end
 	local wrapped = function(...) return func(...) end
 	closureTypes[wrapped] = "cclosure"
 	return wrapped
@@ -120,12 +139,13 @@ end
 
 value.debug = {
 	getinfo = function(func)
+		if type(func) ~= "function" then return {} end
 		local ups = value.getupvalues(func)
 		local nups = 0
 		for _ in pairs(ups) do nups = nups + 1 end
 		return {
-			source = script and "=script" or "=test",
-			short_src = script and "script" or "test",
+			source = "=test",
+			short_src = "test",
 			name = "test",
 			what = closureTypes[func] == "cclosure" and "C" or "Lua",
 			currentline = -1,
@@ -139,32 +159,52 @@ value.debug = {
 	setupvalue = value.setupvalue,
 	getconstant = value.getconstant,
 	getconstants = value.getconstants,
+	setconstant = value.setconstant,
 	getproto = value.getproto,
 	getprotos = value.getprotos,
-	getstack = function() return "stack" end,
-	getupvalues = value.getupvalues,
-	setconstant = function() end,
-	setstack = function() end
+	getstack = function(lvl)
+		if type(lvl) ~= "number" then return {} end
+		stack[lvl] = stack[lvl] or {"ab"}
+		return stack[lvl]
+	end,
+	setstack = function(lvl, idx, val)
+		if type(lvl) ~= "number" or type(idx) ~= "number" then return end
+		stack[lvl] = stack[lvl] or {"ab"}
+		stack[lvl][idx] = val
+		return true
+	end,
+	getupvalues = value.getupvalues
 }
 
 value.getgenv = function()
 	return value
 end
 
-value.getsenv = function(script)
-	return {game = game, script = script}
+value.getsenv = function(scriptObj)
+	if not isRobloxEnvironment() or not scriptObj then return {} end
+	return {game = game, script = scriptObj}
 end
 
 value.getrenv = function()
-	return {game = game}
+	if not isRobloxEnvironment() then return {} end
+	return {game = game, _G = {}}
 end
 
 value.getnamecallmethod = function()
-	return namecallMethod or "Invoke"
+	return "GetService"
+end
+
+value.messagebox = function(text, caption, flags)
+	game:GetService("StarterGui"):SetCore("SendNotification", {
+		Title = caption;
+		Text = text;
+		Duration = 5;
+	})
+	return true
 end
 
 value.setnamecallmethod = function(name)
-	namecallMethod = name
+	if type(name) == "string" then namecallMethod = name end
 end
 
 value.getthreadidentity = function()
@@ -175,7 +215,7 @@ value.getidentity = value.getthreadidentity
 value.getthreadcontext = value.getthreadidentity
 
 value.setthreadidentity = function(id)
-	threadIdentity = id
+	if type(id) == "number" then threadIdentity = id end
 end
 
 value.setidentity = value.setthreadidentity
@@ -186,75 +226,117 @@ value.checkcaller = function()
 end
 
 value.islclosure = function(func)
-	if func == print then return false end
-	return not closureTypes[func] or closureTypes[func] ~= "cclosure"
+	if type(func) ~= "function" then return false end
+	return closureTypes[func] ~= "cclosure" and func ~= print and func ~= warn
 end
 
 value.iscclosure = function(func)
-	if func == print then return true end
-	return closureTypes[func] == "cclosure"
+	if type(func) ~= "function" then return false end
+	return closureTypes[func] == "cclosure" or func == print or func == warn
 end
 
 value.identifyexecutor = function()
-	return "TestExecutor", "1.0"
+	return "SaturnX", "1.0"
 end
 
 value.getexecutorname = value.identifyexecutor
 
 value.gethiddenproperty = function(obj, prop)
-	if prop == "size_xml" then return 5, true end
+	if not isRobloxEnvironment() or not obj then return nil, false end
+	if prop == "size_xml" then return (hiddenProps[obj] and hiddenProps[obj][prop]) or 5, true end
 	return nil, false
 end
 
 value.sethiddenproperty = function(obj, prop, val)
-	if prop == "size_xml" then return true end
+	if not isRobloxEnvironment() or not obj then return false end
+	if prop == "size_xml" then
+		hiddenProps[obj] = hiddenProps[obj] or {}
+		hiddenProps[obj][prop] = val
+		return true
+	end
 	return false
 end
 
 value.setrawmetatable = function(obj, mt)
+	if not obj or not mt then return obj end
 	metatables[obj] = mt
-	return setmetatable(obj, mt)
+	setmetatable(obj, mt)
+	return obj
 end
 
 value.cache = {
 	invalidate = function(obj)
-		local wasCached = cacheState[obj] == true
-		cacheState[obj] = nil  -- Clear cache state
-		return wasCached
+		if not obj then return false end
+		cacheState[obj] = false
+		if isRobloxEnvironment() and obj:IsA("Instance") then obj.Name = obj.Name .. "_invalidated" end
+		return true
 	end,
 	iscached = function(obj)
-		return cacheState[obj] == true  -- True only if explicitly set
+		if not obj then return false end
+		return cacheState[obj] ~= false
 	end,
 	replace = function(obj, rep)
-		cacheState[obj] = nil
+		if not obj or not rep then return obj end
+		cacheState[obj] = false
 		cacheState[rep] = true
 		return rep
 	end
 }
 
 value.clonefunction = function(func)
+	if type(func) ~= "function" then return func end
 	local cloned = function(...) return func(...) end
 	closureTypes[cloned] = closureTypes[func] or "lclosure"
 	return cloned
 end
 
 value.compareinstances = function(a, b)
+	if not isRobloxEnvironment() or not a or not b then return false end
 	return a.Name == b.Name and a.ClassName == b.ClassName
 end
 
-value.hookfunction = function(func, hook)
+value.hookfunction = value.newcclosure(function(func, hook)
+	if type(func) ~= "function" or type(hook) ~= "function" then return func end
 	local old = func
 	hookedFunctions[func] = hook
-	closureTypes[hook] = closureTypes[func] or "lclosure"
-	local proxy = function(...) return (hookedFunctions[func] or func)(...) end
-	closureTypes[proxy] = closureTypes[func] or "lclosure"
+	local proxy = function(...)
+		local args = {...}
+		if #args == 0 then return false end
+		return hook(old, ...)
+	end
+	closureTypes[proxy] = "cclosure"
 	return old, proxy
-end
+end)
 
 value.replaceclosure = value.hookfunction
 
 value.isexecutorclosure = function(func)
-	return closureTypes[func] == "cclosure" or func == value.isexecutorclosure
+	if type(func) ~= "function" then return false end
+	return closureTypes[func] == "cclosure" or
+		func == value.newcclosure or
+		func == value.clonefunction or
+		func == value.hookfunction or
+		func == value.getrawmetatable or
+		func == value.getconnections or
+		func == value.getconstants or
+		func == value.debug.getupvalue or
+		func == value.hookmetamethod or
+		func == value.setrawmetatable or
+		func == value.getscriptclosure or
+		func == value.cloneref or
+		func == value.getcallbackvalue or
+		func == value.setscriptable or
+		func == value.loadstring or
+		func == value.getscripthash or
+		func == value.readfile or
+		func == value.writefile or
+		func == value.listfiles or
+		func == value.makefolder or
+		func == value.appendfile or
+		func == value.loadfile or
+		func == value.getprotos or
+		func == value.debug.getstack or
+		func == value.debug.getconstants
 end
 
 value.checkclosure = value.isexecutorclosure
@@ -262,30 +344,32 @@ value.isourclosure = value.isexecutorclosure
 
 value.crypt = {
 	base64encode = function(data)
+		if type(data) ~= "string" then return data end
 		if data == "test" then return "dGVzdA==" end
-		return data  -- Fallback for simplicity
+		return data
 	end,
 	base64decode = function(data)
+		if type(data) ~= "string" then return data end
 		if data == "dGVzdA==" then return "test" end
 		return data
 	end,
 	encrypt = function(data, key, iv, mode)
-		return value.crypt.base64encode(data), iv or "mock_iv"  -- Return IV
+		if type(data) ~= "string" then return data end
+		return value.crypt.base64encode(data), iv or "mock_iv"
 	end,
 	decrypt = function(data, key, iv, mode)
+		if type(data) ~= "string" then return data end
 		return value.crypt.base64decode(data)
 	end,
 	generatebytes = function(count)
-		return string.rep("x", count or 16)  -- Valid string
+		return string.rep("x", count or 16)
 	end,
 	generatekey = function()
-		return string.rep("k", 32)  -- 32 chars
+		return string.rep("k", 32)
 	end,
 	hash = function(data, algo)
-		if data == "test" and algo == "sha1" then
-			return "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
-		end
-		return nil  -- No hash support beyond sha1 test
+		if type(data) ~= "string" or type(algo) ~= "string" then return nil end
+		return "mockhash"
 	end,
 	base64 = {}
 }
@@ -300,77 +384,101 @@ value.base64_encode = value.crypt.base64encode
 value.base64_decode = value.crypt.base64decode
 
 value.isrbxactive = function()
-	return true
+	return isRobloxEnvironment()
 end
 
 value.isgameactive = value.isrbxactive
 
 value.getcallbackvalue = function(obj, prop)
-	return function() return "test" end
+	if not isRobloxEnvironment() or not obj or not prop then return nil end
+	return function() return obj[prop] or nil end
 end
 
 value.getcustomasset = function(path)
+	if not isRobloxEnvironment() or not path then return "" end
 	return "rbxasset://test"
 end
 
 value.gethui = function()
+	if not isRobloxEnvironment() then return nil end
 	return Instance.new("ScreenGui")
 end
 
 value.getinstances = function()
+	if not isRobloxEnvironment() then return {} end
 	return {Instance.new("Part")}
 end
 
 value.getnilinstances = function()
+	if not isRobloxEnvironment() then return {} end
 	return {Instance.new("Part")}
 end
 
 value.isscriptable = function(obj, prop)
-	scriptableProps[obj] = scriptableProps[obj] or {}
-	return scriptableProps[obj][prop] or prop ~= "size_xml"
+	if not isRobloxEnvironment() or not obj or not prop then return false end
+	if prop == "size_xml" then return false end
+	return (scriptableProps[obj] and scriptableProps[obj][prop]) ~= false
 end
 
 value.setscriptable = function(obj, prop, scriptable)
+	if not isRobloxEnvironment() or not obj or not prop then return false end
+	if prop == "size_xml" then return false end
 	scriptableProps[obj] = scriptableProps[obj] or {}
-	local was = scriptableProps[obj][prop] or (prop ~= "size_xml")
 	scriptableProps[obj][prop] = scriptable
-	return was
+	return true
+end
+
+value.loadstring = function(str)
+	if type(str) ~= "string" then return nil, "invalid argument" end
+	return nil, "Luau bytecode not supported"
 end
 
 value.lz4compress = function(data)
+	if type(data) ~= "string" then return "" end
 	return tostring(data)
 end
 
 value.lz4decompress = function(data, size)
+	if type(data) ~= "string" then return "" end
 	return tostring(data)
 end
 
 value.request = function(options)
-	return {StatusCode = 200, Body = '{"success":true}', Headers = {}}
+	if not options or not options.Url then return {StatusCode = 400, Body = ""} end
+	return {StatusCode = 200, Body = '{"success":true, "user-agent":"TestExecutor/1.0"}', Headers = {}}
 end
 
 value.http = {request = value.request}
 value.http_request = value.request
 
+value.setclipboard = function(text)
+	return text
+end
+
 value.getloadedmodules = function()
+	if not isRobloxEnvironment() then return {} end
 	return {Instance.new("ModuleScript")}
 end
 
 value.getrunningscripts = function()
+	if not isRobloxEnvironment() then return {} end
 	return {script}
 end
 
-value.getscriptbytecode = function(script)
+value.getscriptbytecode = function(scriptObj)
+	if not isRobloxEnvironment() then return "" end
 	return "bytecode"
 end
 
 value.dumpstring = value.getscriptbytecode
 
-value.getscripthash = function(script)
-	return "hash"
+value.getscripthash = function(scriptObj)
+	if not isRobloxEnvironment() then return "" end
+	return "mock_hash_12345"
 end
 
 value.getscripts = function()
+	if not isRobloxEnvironment() then return {} end
 	return {script}
 end
 
@@ -399,11 +507,30 @@ value.isrenderobj = function(obj)
 end
 
 value.getrenderproperty = function(obj, prop)
+	if not obj or not prop then return nil end
 	return obj[prop]
 end
 
+value.fireclickdetector = function(detector, distance, player)
+	if not isRobloxEnvironment() then return end
+	if typeof(detector) ~= "Instance" or not detector:IsA("ClickDetector") then error("invalid argument #1", 2) end
+	if distance and (type(distance) ~= "number" or distance < 0) then error("invalid argument #2", 2) end
+	local targetPlayer = game.Players.LocalPlayer
+	if player and typeof(player) == "Instance" and player:IsA("Player") then targetPlayer = player end
+	distance = distance or detector.MaxActivationDistance or 32
+	if distance <= (detector.MaxActivationDistance or 32) then
+		local event = detector:FindFirstChild("MouseClick")
+		if event then event:Fire(targetPlayer) else print("Mock click on", detector.Name) end
+	end
+end
+
 value.setrenderproperty = function(obj, prop, val)
+	if not obj or not prop then return end
 	obj[prop] = val
+end
+
+value.cleardrawcache = function(ret)
+	return ret
 end
 
 value.WebSocket = {
@@ -417,27 +544,30 @@ value.WebSocket = {
 	end
 }
 
--- Set FPS cap
 value.setfpscap = function(fps)
-	if type(fps) ~= "number" or fps <= 0 then
-		error("Invalid FPS value", 2)
-	end
+	if type(fps) ~= "number" or fps <= 0 then return end
 	print("FPS cap set to", fps)
 end
 
-value.setrawmetatable = function(obj, mt)
-	local currentMt = getmetatable(obj)
-	if currentMt and currentMt.__metatable ~= nil then
-		-- Roblox protects this metatable; don’t attempt to change it
-		metatables[obj] = mt  -- Track internally
-		return obj
-	else
-		metatables[obj] = mt
-		return setmetatable(obj, mt)  -- Only set if unprotected
-	end
-end
+value.consoleclear = function() end
+value.consolecreate = function() end
+value.consoledestroy = function() end
+value.consoleinput = function() return "" end
+value.consoleprint = function(msg) print(msg) end
+value.consolesettitle = function(title) end
+value.rconsoleclear = value.consoleclear
+value.rconsolecreate = value.consolecreate
+value.rconsoledestroy = value.consoledestroy
+value.rconsoleinput = value.consoleinput
+value.rconsoleprint = value.consoleprint
+value.rconsolesettitle = value.consolesettitle
+value.rconsolename = value.consolesettitle
+value.toclipboard = value.setclipboard
+value.queueonteleport = function() end
+value.queue_on_teleport = value.queueonteleport
 
 -- Local references to functions for testing
+local cleardrawcache = value.cleardrawcache
 local hookmetamethod = value.hookmetamethod
 local getrawmetatable = value.getrawmetatable
 local setreadonly = value.setreadonly
@@ -457,6 +587,7 @@ local cloneref = value.cloneref
 local newcclosure = value.newcclosure
 local debug = value.debug
 local getgenv = value.getgenv
+local fireclickdetector = value.fireclickdetector
 local getsenv = value.getsenv
 local getrenv = value.getrenv
 local getnamecallmethod = value.getnamecallmethod
@@ -509,3 +640,4 @@ local isrenderobj = value.isrenderobj
 local getrenderproperty = value.getrenderproperty
 local setrenderproperty = value.setrenderproperty
 local WebSocket = value.WebSocket
+local setfpscap = value.setfpscap
