@@ -1,5 +1,5 @@
 # MORE-UNC
-  UNC Environment Check
+UNC Environment Check
 ✅ - Pass, ⛔ - Fail, ⏺️ - No test, ⚠️ - Missing aliases
 ✅ cache.invalidate
 ✅ cache.iscached
@@ -108,7 +108,7 @@ FPS cap set to 60
 ✅ cleardrawcache
 ⏺️ WebSocket
 ✅ WebSocket.connect
-Unknown class "UIInlineLayout"; ignoring.
+Unknown class UIInlineLayout; ignoring.
 ✅ setfpscap • 38fps @60 • 46fps @0
 UNC Summary
 ✅ Tested with a 69% success rate (57 out of 83)
