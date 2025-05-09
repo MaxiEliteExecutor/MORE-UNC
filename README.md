@@ -215,7 +215,11 @@ UNC Environment Check
 ✅ WebSocket.connect
 
 ✅ setfpscap • 38fps @60 • 46fps @0
+
 UNC Summary
+
 ✅ Tested with a 69% success rate (57 out of 83)
+
 ⛔ 26 tests failed
+
 ⚠️ 1 globals are missing aliases
