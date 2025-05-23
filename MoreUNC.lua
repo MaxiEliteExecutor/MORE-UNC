@@ -283,7 +283,7 @@ value.iscclosure = function(func)
 end
 
 value.identifyexecutor = function()
-	return "SaturnX", "1.0"
+	return "Unc test", "1.0"
 end
 
 value.getexecutorname = value.identifyexecutor
